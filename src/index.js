@@ -42,11 +42,11 @@ function Board({ squares, onClick }) {
 }
 
 function Game(props) {
-  const { timeline, setTimeline } = useState([{
+  const [ timeline, setTimeline ] = useState([{
     squares: Array(9).fill(null),
   }]);
-  const { stepNumber, setStepNumber } = useState(0);
-  const { xIsNext, setXIsNext } = useState(true);
+  const [ stepNumber, setStepNumber ] = useState(0);
+  const [ xIsNext, setXIsNext ] = useState(true);
 
   const handleClick = (i) => {
     const history = timeline.slice(0, stepNumber + 1);
@@ -93,7 +93,7 @@ function Game(props) {
     if (!current.squares.includes(null)) {
       return 'Draw';
     }
-    return 'Next player: ' + (this.state.xIsNext ? 'X' : 'O');
+    return 'Next player: ' + (xIsNext ? 'X' : 'O');
   };
 
   return (
@@ -105,7 +105,7 @@ function Game(props) {
         />
       </div>
       <div className="game-info">
-        <div>{getStatus}</div>
+        <div>{getStatus()}</div>
         <ol>{getMoves()}</ol>
       </div>
     </div>
@@ -138,4 +138,3 @@ function calculateWinner(squares) {
   }
   return null;
 }
-  

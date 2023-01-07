@@ -2,19 +2,19 @@ import React, { useState } from 'react';
 import ReactDOM from 'react-dom';
 import './index.css';
 
-function Square({ value, onClick }) {
+function Tile({ value, onClick }) {
   return (
-    <button className="square" onClick={onClick}>
+    <button className="tile" onClick={onClick}>
       {value}
     </button>
   );
 }
 
-function Board({ squares, onClick }) {
-  const renderSquare = (i) => {
+function Board({ tiles, onClick }) {
+  const renderTile = (i) => {
     return (
-      <Square 
-        value={squares[i]}
+      <Tile 
+        value={tiles[i]}
         onClick={() => onClick(i)}
       />
     );
@@ -23,19 +23,19 @@ function Board({ squares, onClick }) {
   return (
     <div>
       <div className="board-row">
-        {renderSquare(0)}
-        {renderSquare(1)}
-        {renderSquare(2)}
+        {renderTile(0)}
+        {renderTile(1)}
+        {renderTile(2)}
       </div>
       <div className="board-row">
-        {renderSquare(3)}
-        {renderSquare(4)}
-        {renderSquare(5)}
+        {renderTile(3)}
+        {renderTile(4)}
+        {renderTile(5)}
       </div>
       <div className="board-row">
-        {renderSquare(6)}
-        {renderSquare(7)}
-        {renderSquare(8)}
+        {renderTile(6)}
+        {renderTile(7)}
+        {renderTile(8)}
       </div>
     </div>
   );
@@ -43,7 +43,7 @@ function Board({ squares, onClick }) {
 
 function Game(props) {
   const [ timeline, setTimeline ] = useState([{
-    squares: Array(9).fill(null),
+    tiles: Array(9).fill(null),
   }]);
   const [ stepNumber, setStepNumber ] = useState(0);
   const [ xIsNext, setXIsNext ] = useState(true);
@@ -51,14 +51,14 @@ function Game(props) {
   const handleClick = (i) => {
     const history = timeline.slice(0, stepNumber + 1);
     const current = history[history.length - 1];
-    const squares = current.squares.slice();
-    if (calculateWinner(squares) || squares[i]) {
+    const tiles = current.tiles.slice();
+    if (calculateWinner(tiles) || tiles[i]) {
       return;
     }
-    squares[i] = xIsNext ? 'X' : 'O';
+    tiles[i] = xIsNext ? 'X' : 'O';
     setTimeline(
       history.concat([{
-        squares: squares,
+        tiles: tiles,
       }])
     );
     setStepNumber(history.length);
@@ -85,12 +85,12 @@ function Game(props) {
 
   const getStatus = () => {
     const current = timeline[stepNumber];
-    const winner = calculateWinner(current.squares);
+    const winner = calculateWinner(current.tiles);
 
     if (winner) {
       return `Winner: ${winner}`;
     }
-    if (!current.squares.includes(null)) {
+    if (!current.tiles.includes(null)) {
       return 'Draw';
     }
     return 'Next player: ' + (xIsNext ? 'X' : 'O');
@@ -100,7 +100,7 @@ function Game(props) {
     <div className="game">
       <div className="game-board">
         <Board 
-          squares={timeline[stepNumber].squares}
+          tiles={timeline[stepNumber].tiles}
           onClick={(i) => handleClick(i)}
         />
       </div>
@@ -119,7 +119,7 @@ ReactDOM.render(
   document.getElementById('root')
 );
 
-function calculateWinner(squares) {
+function calculateWinner(tiles) {
   const lines = [
     [0, 1, 2],
     [3, 4, 5],
@@ -132,8 +132,8 @@ function calculateWinner(squares) {
   ];
   for (let i = 0; i < lines.length; i++) {
     const [a, b, c] = lines[i];
-    if (squares[a] && squares[a] === squares[b] && squares[a] === squares[c]) {
-      return squares[a];
+    if (tiles[a] && tiles[a] === tiles[b] && tiles[a] === tiles[c]) {
+      return tiles[a];
     }
   }
   return null;

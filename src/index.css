@@ -17,7 +17,7 @@ body {
     margin-bottom: 10px;
   }
   
-  .square {
+  .tile {
     background: #fff;
     border: 1px solid #999;
     float: left;
@@ -32,11 +32,11 @@ body {
     width: 34px;
   }
   
-  .square:focus {
+  .tile:focus {
     outline: none;
   }
   
-  .kbd-navigation .square:focus {
+  .kbd-navigation .tile:focus {
     background: #ddd;
   }
   

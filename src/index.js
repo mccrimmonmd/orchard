@@ -1,13 +1,13 @@
-import React, { useState } from 'react';
-import ReactDOM from 'react-dom';
-import './index.css';
+import React, { useState } from 'react'
+import ReactDOM from 'react-dom'
+import './index.css'
 
 function Tile({ value, onClick }) {
   return (
     <button className="tile" onClick={onClick}>
       {value}
     </button>
-  );
+  )
 }
 
 function Board({ tiles, onClick }) {
@@ -17,8 +17,8 @@ function Board({ tiles, onClick }) {
         value={tiles[i]}
         onClick={() => onClick(i)}
       />
-    );
-  };
+    )
+  }
 
   return (
     <div>
@@ -38,63 +38,63 @@ function Board({ tiles, onClick }) {
         {renderTile(8)}
       </div>
     </div>
-  );
+  )
 }
 
 function Game(props) {
   const [ timeline, setTimeline ] = useState([{
     tiles: Array(9).fill(null),
-  }]);
-  const [ stepNumber, setStepNumber ] = useState(0);
-  const [ xIsNext, setXIsNext ] = useState(true);
+  }])
+  const [ stepNumber, setStepNumber ] = useState(0)
+  const [ xIsNext, setXIsNext ] = useState(true)
 
   const handleClick = (i) => {
-    const history = timeline.slice(0, stepNumber + 1);
-    const current = history[history.length - 1];
-    const tiles = current.tiles.slice();
+    const history = timeline.slice(0, stepNumber + 1)
+    const current = history[history.length - 1]
+    const tiles = current.tiles.slice()
     if (calculateWinner(tiles) || tiles[i]) {
-      return;
+      return
     }
-    tiles[i] = xIsNext ? 'X' : 'O';
+    tiles[i] = nextPlayer ? 'X' : 'O'
     setTimeline(
       history.concat([{
         tiles: tiles,
       }])
-    );
-    setStepNumber(history.length);
-    setXIsNext(!xIsNext);
-  };
+    )
+    setStepNumber(history.length)
+    setNextPlayer(!nextPlayer)
+  }
   
   const jumpTo = (step) => {
-    setStepNumber(step);
-    setXIsNext((step % 2) === 0);
-  };
+    setStepNumber(step)
+    setNextPlayer((step % 2) === 0)
+  }
 
   const getMoves = () => {
     return timeline.map((step, move) => {
       const desc = move ?
         `Go to move #${move}` :
-        `Go to game start`;
+        `Go to game start`
       return (
         <li key={move}>
           <button onClick={() => jumpTo(move)}>{desc}</button>
         </li>
       )
     })
-  };
+  }
 
   const getStatus = () => {
-    const current = timeline[stepNumber];
-    const winner = calculateWinner(current.tiles);
+    const current = timeline[stepNumber]
+    const winner = calculateWinner(current.tiles)
 
     if (winner) {
-      return `Winner: ${winner}`;
+      return `Winner: ${winner}`
     }
     if (!current.tiles.includes(null)) {
-      return 'Draw';
+      return 'Draw'
     }
-    return 'Next player: ' + (xIsNext ? 'X' : 'O');
-  };
+    return 'Next player: ' + (nextPlayer ? 'X' : 'O')
+  }
 
   return (
     <div className="game">
@@ -109,7 +109,7 @@ function Game(props) {
         <ol>{getMoves()}</ol>
       </div>
     </div>
-  );
+  )
 }
 
 // ========================================
@@ -117,7 +117,7 @@ function Game(props) {
 ReactDOM.render(
   <Game />,
   document.getElementById('root')
-);
+)
 
 function calculateWinner(tiles) {
   const lines = [
@@ -129,12 +129,12 @@ function calculateWinner(tiles) {
     [2, 5, 8],
     [0, 4, 8],
     [2, 4, 6],
-  ];
+  ]
   for (let i = 0; i < lines.length; i++) {
-    const [a, b, c] = lines[i];
+    const [a, b, c] = lines[i]
     if (tiles[a] && tiles[a] === tiles[b] && tiles[a] === tiles[c]) {
-      return tiles[a];
+      return tiles[a]
     }
   }
-  return null;
+  return null
 }

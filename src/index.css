@@ -35,6 +35,14 @@ body {
   .tile:focus {
     outline: none;
   }
+
+  .tile.green {
+    background: lightgreen
+  }
+
+  .tile.blue {
+    background: lightblue
+  }
   
   .kbd-navigation .tile:focus {
     background: #ddd;

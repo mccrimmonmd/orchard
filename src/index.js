@@ -2,9 +2,11 @@ import React, { useState } from 'react'
 import ReactDOM from 'react-dom'
 import './index.css'
 
-function Tile({ value, onClick }) {
+const DEBUG = true
+
+function Tile({ value, ownedBy, onClick  }) {
   return (
-    <button className="tile" onClick={onClick}>
+    <button className={`tile ${ownedBy}`} onClick={onClick}>
       {value}
     </button>
   )
@@ -14,7 +16,8 @@ function Board({ tiles, onClick }) {
   const renderTile = (i) => {
     return (
       <Tile 
-        value={tiles[i]}
+        value={tiles[i]?.value}
+        ownedBy={tiles[i]?.ownedBy || ''}
         onClick={() => onClick(i)}
       />
     )
@@ -41,12 +44,28 @@ function Board({ tiles, onClick }) {
   )
 }
 
+function Palette({ trees, selectedTree, setSelectedTree }) {
+  return trees.map((tree, i) => {
+    return (
+      <button 
+        className={`tree ${selectedTree === i ? 'selected' : ''}`} 
+        onClick={() => setSelectedTree(i)}>
+        {tree}
+      </button>
+    )
+  })
+}
+
 function Game(props) {
   const [ timeline, setTimeline ] = useState([{
     tiles: Array(9).fill(null),
   }])
   const [ stepNumber, setStepNumber ] = useState(0)
-  const [ xIsNext, setXIsNext ] = useState(true)
+  const [ currentPlayer, setCurrentPlayer ] = useState(0)
+  const [ selectedTree, setSelectedTree ] = useState(0)
+
+  const players = [ 'green', 'blue' ]
+  const trees = ['⋀', '⋂']
 
   const handleClick = (i) => {
     const history = timeline.slice(0, stepNumber + 1)
@@ -55,19 +74,24 @@ function Game(props) {
     if (calculateWinner(tiles) || tiles[i]) {
       return
     }
-    tiles[i] = nextPlayer ? 'X' : 'O'
+    tiles[i] = {
+      value: trees[selectedTree],
+      ownedBy: players[currentPlayer],
+    }
     setTimeline(
       history.concat([{
         tiles: tiles,
       }])
     )
     setStepNumber(history.length)
-    setNextPlayer(!nextPlayer)
+    if (!calculateWinner(tiles)) {
+      setCurrentPlayer((currentPlayer + 1) % players.length)
+    }
   }
   
   const jumpTo = (step) => {
     setStepNumber(step)
-    setNextPlayer((step % 2) === 0)
+    setCurrentPlayer(step % players.length)
   }
 
   const getMoves = () => {
@@ -88,12 +112,18 @@ function Game(props) {
     const winner = calculateWinner(current.tiles)
 
     if (winner) {
-      return `Winner: ${winner}`
+      return `Winner: ${players[currentPlayer]}`
     }
     if (!current.tiles.includes(null)) {
       return 'Draw'
     }
-    return 'Next player: ' + (nextPlayer ? 'X' : 'O')
+    return (
+      <div>
+        {`Current player: ${players[currentPlayer]}`}
+        <br />
+        {`Current tree: ${trees[selectedTree]}`}
+      </div>
+    )
   }
 
   return (
@@ -106,7 +136,12 @@ function Game(props) {
       </div>
       <div className="game-info">
         <div>{getStatus()}</div>
-        <ol>{getMoves()}</ol>
+        <Palette
+          trees={trees}
+          selectedTree={selectedTree}
+          setSelectedTree={setSelectedTree}
+        />
+        {DEBUG ? <ol>{getMoves()}</ol> : null}
       </div>
     </div>
   )
@@ -132,8 +167,9 @@ function calculateWinner(tiles) {
   ]
   for (let i = 0; i < lines.length; i++) {
     const [a, b, c] = lines[i]
-    if (tiles[a] && tiles[a] === tiles[b] && tiles[a] === tiles[c]) {
-      return tiles[a]
+    let aVal = tiles[a]?.value
+    if (aVal && aVal === tiles[b]?.value && aVal === tiles[c]?.value) {
+      return tiles[a].ownedBy
     }
   }
   return null

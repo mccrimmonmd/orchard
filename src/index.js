@@ -2,7 +2,12 @@ import React, { useState } from 'react'
 import ReactDOM from 'react-dom'
 import './index.css'
 
-const DEBUG = true
+const config = {
+  DEBUG: true,
+  boardSize: { x: 3, y: 3 },
+  players: [ 'green', 'blue' ], 
+  trees: ['⋀', '⋂'], 
+}
 
 function Tile({ value, ownedBy, onClick  }) {
   return (
@@ -56,16 +61,13 @@ function Palette({ trees, selectedTree, setSelectedTree }) {
   })
 }
 
-function Game(props) {
+function Game({ boardSize, players, trees }) {
   const [ timeline, setTimeline ] = useState([{
     tiles: Array(9).fill(null),
   }])
   const [ stepNumber, setStepNumber ] = useState(0)
   const [ currentPlayer, setCurrentPlayer ] = useState(0)
   const [ selectedTree, setSelectedTree ] = useState(0)
-
-  const players = [ 'green', 'blue' ]
-  const trees = ['⋀', '⋂']
 
   const handleClick = (i) => {
     const history = timeline.slice(0, stepNumber + 1)
@@ -141,7 +143,7 @@ function Game(props) {
           selectedTree={selectedTree}
           setSelectedTree={setSelectedTree}
         />
-        {DEBUG ? <ol>{getMoves()}</ol> : null}
+        {config.DEBUG ? <ol>{getMoves()}</ol> : null}
       </div>
     </div>
   )
@@ -150,7 +152,11 @@ function Game(props) {
 // ========================================
 
 ReactDOM.render(
-  <Game />,
+  <Game
+    boardSize={config.boardSize}
+    players={config.players}
+    trees={config.trees}
+  />,
   document.getElementById('root')
 )
 

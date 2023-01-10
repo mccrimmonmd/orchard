@@ -36,11 +36,11 @@ body {
     outline: none;
   }
 
-  .tile.green {
+  .tile.summer {
     background: lightgreen
   }
 
-  .tile.blue {
+  .tile.winter {
     background: lightblue
   }
   

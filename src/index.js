@@ -4,9 +4,9 @@ import './index.css'
 
 const config = {
   DEBUG: true,
-  boardSize: { x: 3, y: 3 },
-  players: [ 'green', 'blue' ], 
-  trees: ['⋀', '⋂'], 
+  boardSize: { rows: 3, cols: 3 },
+  players: [ 'summer', 'winter' ], 
+  trees: ['⋀', 'Y'] // ⋂ Ŧ ∀ ⨙ ξ ₸
 }
 
 function Tile({ value, ownedBy, onClick  }) {
@@ -18,33 +18,27 @@ function Tile({ value, ownedBy, onClick  }) {
 }
 
 function Board({ tiles, onClick }) {
-  const renderTile = (i) => {
+  const renderTile = (row, col) => {
     return (
       <Tile 
-        value={tiles[i]?.value}
-        ownedBy={tiles[i]?.ownedBy || ''}
-        onClick={() => onClick(i)}
+        value={tiles[row][col]?.value}
+        ownedBy={tiles[row][col]?.ownedBy || ''}
+        onClick={() => onClick(row,col)}
       />
     )
   }
 
   return (
     <div>
-      <div className="board-row">
-        {renderTile(0)}
-        {renderTile(1)}
-        {renderTile(2)}
-      </div>
-      <div className="board-row">
-        {renderTile(3)}
-        {renderTile(4)}
-        {renderTile(5)}
-      </div>
-      <div className="board-row">
-        {renderTile(6)}
-        {renderTile(7)}
-        {renderTile(8)}
-      </div>
+      {tiles.map((_, row) => {
+        return (
+          <div className="board-row">
+            {tiles[row].map((_, col) => 
+              renderTile(row, col)
+            )}
+          </div>
+        )
+      })}
     </div>
   )
 }
@@ -63,20 +57,20 @@ function Palette({ trees, selectedTree, setSelectedTree }) {
 
 function Game({ boardSize, players, trees }) {
   const [ timeline, setTimeline ] = useState([{
-    tiles: Array(9).fill(null),
+    tiles: Array(boardSize.rows).fill(Array(boardSize.cols).fill(null)),
   }])
   const [ stepNumber, setStepNumber ] = useState(0)
   const [ currentPlayer, setCurrentPlayer ] = useState(0)
   const [ selectedTree, setSelectedTree ] = useState(0)
 
-  const handleClick = (i) => {
+  const handleClick = (row,col) => {
     const history = timeline.slice(0, stepNumber + 1)
     const current = history[history.length - 1]
     const tiles = current.tiles.slice()
-    if (calculateWinner(tiles) || tiles[i]) {
+    if (calculateWinner(tiles) || tiles[row][col]) {
       return
     }
-    tiles[i] = {
+    tiles[row][col] = {
       value: trees[selectedTree],
       ownedBy: players[currentPlayer],
     }
@@ -133,7 +127,7 @@ function Game({ boardSize, players, trees }) {
       <div className="game-board">
         <Board 
           tiles={timeline[stepNumber].tiles}
-          onClick={(i) => handleClick(i)}
+          onClick={(i,j) => handleClick(i,j)}
         />
       </div>
       <div className="game-info">

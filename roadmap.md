@@ -16,6 +16,9 @@ line-making tree
     then the first person to run out of seeds loses!
 - More than two plant types
 - Support for more than two players
+  - Online play ('rooms' instead of users? can join public spaces under any
+  name, but private spaces require password? (but then, no way to publicly track
+  stuff like wins/losses, leaderboards, etc...which might not be a bad thing?))
 - Stuff
 
 ## Nice to have

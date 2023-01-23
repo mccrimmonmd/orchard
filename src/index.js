@@ -127,7 +127,7 @@ function Game({ boardSize, players, trees }) {
       <div className="game-board">
         <Board 
           tiles={timeline[stepNumber].tiles}
-          onClick={(i,j) => handleClick(i,j)}
+          onClick={handleClick}
         />
       </div>
       <div className="game-info">

@@ -19,8 +19,9 @@ line-making tree
   - Online play ('rooms' instead of users? can join public spaces under any
   name, but private spaces require password? (but then, no way to publicly track
   stuff like wins/losses, leaderboards, etc...which might not be a bad thing?))
-- Stuff
+- Terrain
 
-## Nice to have
+## Speculative
 
-- Stuff
+- Map editor
+- Actions other than planting (fire? rain?)

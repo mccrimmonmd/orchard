@@ -92,9 +92,7 @@ function Game({ boardSize, players, trees }) {
 
   const getMoves = () => {
     return timeline.map((step, move) => {
-      const desc = move ?
-        `Go to move #${move}` :
-        `Go to game start`
+      const desc = move ? `Go to move #${move}` : `Go to game start`
       return (
         <li key={move}>
           <button onClick={() => jumpTo(move)}>{desc}</button>

@@ -19,8 +19,10 @@ function Tile({ value, ownedBy, onClick  }) {
 
 function Board({ tiles, onClick }) {
   const renderTile = (row, col) => {
+    // console.log(row, col)
     return (
       <Tile 
+        key={row + '.' + col}
         value={tiles[row][col]?.value}
         ownedBy={tiles[row][col]?.ownedBy || ''}
         onClick={() => onClick(row,col)}
@@ -32,7 +34,7 @@ function Board({ tiles, onClick }) {
     <div>
       {tiles.map((_, row) => {
         return (
-          <div className="board-row">
+          <div key={row} className="board-row">
             {tiles[row].map((_, col) => 
               renderTile(row, col)
             )}
@@ -63,10 +65,12 @@ function Game({ boardSize, players, trees }) {
   const [ currentPlayer, setCurrentPlayer ] = useState(0)
   const [ selectedTree, setSelectedTree ] = useState(0)
 
-  const handleClick = (row,col) => {
+  const handleClick = (row , col) => {
+    // console.log(row, col)
     const history = timeline.slice(0, stepNumber + 1)
     const current = history[history.length - 1]
     const tiles = current.tiles.slice()
+    console.dir(tiles)
     if (calculateWinner(tiles) || tiles[row][col]) {
       return
     }

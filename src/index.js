@@ -56,9 +56,9 @@ function Palette({ trees, selectedTree, setSelectedTree }) {
 function Game({ boardSize, players, trees }) {
   const emptyBoard = Array(boardSize.rows).fill(null)
     .map(() => Array(boardSize.cols).fill(null))
-  const [ timeline, setTimeline ] = useState([{
-    tiles: emptyBoard,
-  }])
+  const [ timeline, setTimeline ] = useState(
+    [{ tiles: emptyBoard }]
+  )
   const [ stepNumber, setStepNumber ] = useState(0)
   const [ currentPlayer, setCurrentPlayer ] = useState(0)
   const [ selectedTree, setSelectedTree ] = useState(0)

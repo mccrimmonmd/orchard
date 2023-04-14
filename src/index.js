@@ -9,34 +9,29 @@ const config = {
   trees: ['⋀', 'Y'] // ⋂ Ŧ ∀ ⨙ ξ ₸
 }
 
-function Tile({ value, ownedBy, onClick  }) {
+function Tile({ value, ownedBy, clickHandler }) {
   return (
-    <button className={`tile ${ownedBy}`} onClick={onClick}>
+    <button className={`tile ${ownedBy}`} onClick={clickHandler}>
       {value}
     </button>
   )
 }
 
-function Board({ tiles, onClick }) {
-  const renderTile = (row, col) => {
-    // console.log(row, col)
-    return (
-      <Tile 
-        key={row + '.' + col}
-        value={tiles[row][col]?.value}
-        ownedBy={tiles[row][col]?.ownedBy || ''}
-        onClick={() => onClick(row,col)}
-      />
-    )
-  }
-
+function Board({ tiles, getClickHandler }) {
   return (
     <div>
       {tiles.map((_, row) => {
         return (
           <div key={row} className="board-row">
-            {tiles[row].map((_, col) => 
-              renderTile(row, col)
+            {tiles[row].map((_, col) => {
+              return (
+                <Tile 
+                  key={row + '.' + col}
+                  value={tiles[row][col]?.value}
+                  ownedBy={tiles[row][col]?.ownedBy || ''}
+                  clickHandler={getClickHandler(row, col)}
+                />
+              )}
             )}
           </div>
         )
@@ -49,6 +44,7 @@ function Palette({ trees, selectedTree, setSelectedTree }) {
   return trees.map((tree, i) => {
     return (
       <button 
+        key={tree}
         className={`tree ${selectedTree === i ? 'selected' : ''}`} 
         onClick={() => setSelectedTree(i)}>
         {tree}
@@ -58,19 +54,19 @@ function Palette({ trees, selectedTree, setSelectedTree }) {
 }
 
 function Game({ boardSize, players, trees }) {
+  const emptyBoard = Array(boardSize.rows).fill(null)
+    .map(() => Array(boardSize.cols).fill(null))
   const [ timeline, setTimeline ] = useState([{
-    tiles: Array(boardSize.rows).fill(Array(boardSize.cols).fill(null)),
+    tiles: emptyBoard,
   }])
   const [ stepNumber, setStepNumber ] = useState(0)
   const [ currentPlayer, setCurrentPlayer ] = useState(0)
   const [ selectedTree, setSelectedTree ] = useState(0)
 
-  const handleClick = (row , col) => {
-    // console.log(row, col)
+  const getClickHandler = (row , col) => () => {
     const history = timeline.slice(0, stepNumber + 1)
     const current = history[history.length - 1]
     const tiles = current.tiles.slice()
-    console.dir(tiles)
     if (calculateWinner(tiles) || tiles[row][col]) {
       return
     }
@@ -105,6 +101,11 @@ function Game({ boardSize, players, trees }) {
     })
   }
 
+  const isDraw = (rows) => {
+    // full board
+    return rows.every(col => col.every(tile => tile != null))
+  }
+
   const getStatus = () => {
     const current = timeline[stepNumber]
     const winner = calculateWinner(current.tiles)
@@ -112,7 +113,7 @@ function Game({ boardSize, players, trees }) {
     if (winner) {
       return `Winner: ${players[currentPlayer]}`
     }
-    if (!current.tiles.includes(null)) {
+    if (isDraw(current.tiles)) {
       return 'Draw'
     }
     return (
@@ -129,7 +130,7 @@ function Game({ boardSize, players, trees }) {
       <div className="game-board">
         <Board 
           tiles={timeline[stepNumber].tiles}
-          onClick={handleClick}
+          getClickHandler={getClickHandler}
         />
       </div>
       <div className="game-info">

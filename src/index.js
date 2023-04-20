@@ -4,9 +4,9 @@ import './index.css'
 
 const config = {
   DEBUG: true,
-  boardSize: { rows: 3, cols: 3 },
+  boardSize: { rows: 5, cols: 5 },
   players: [ 'summer', 'winter' ], 
-  trees: ['⋀', 'Y'] // ⋂ Ŧ ∀ ⨙ ξ ₸
+  trees: ['⋀', 'Y',] // '⋂', 'Ŧ', '∀', '⨙', 'ξ', '₸',
 }
 
 function Tile({ value, ownedBy, clickHandler }) {

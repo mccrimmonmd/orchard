@@ -53,11 +53,31 @@ function Palette({ trees, selectedTree, setSelectedTree }) {
   })
 }
 
-function Game({ boardSize, players, trees }) {
-  const emptyBoard = Array(boardSize.rows).fill(null)
-    .map(() => Array(boardSize.cols).fill(null))
+const emptyBoard = () => {
+  return Array(config.boardSize.rows).fill(null)
+    .map(() => Array(config.boardSize.cols).fill(null))
+}
+
+const timestep = (currentState) => {
+  let tiles = emptyBoard()
+  currentState.tiles.forEach((_, row) => {
+    currentState.tiles[row].forEach((tile, col) => {
+      if (tile) {
+        let tree = {...tile.tree}
+        tree.age += 1
+        tiles[row][col] = { 
+          ...tile,
+          tree
+        }
+      }
+    })
+  })
+  return { tiles }
+}
+
+function Game({ players }) {
   const [ timeline, setTimeline ] = useState(
-    [{ tiles: emptyBoard }]
+    [{ tiles: emptyBoard() }]
   )
   const [ stepNumber, setStepNumber ] = useState(0)
   const [ currentPlayer, setCurrentPlayer ] = useState(0)
@@ -65,13 +85,17 @@ function Game({ boardSize, players, trees }) {
 
   const getClickHandler = (row , col) => () => {
     const history = timeline.slice(0, stepNumber + 1)
-    const current = history[history.length - 1]
-    const tiles = current.tiles.slice()
+    const current = timestep(history[history.length - 1])
+    const tiles = current.tiles
     if (calculateWinner(tiles) || tiles[row][col]) {
       return
     }
     tiles[row][col] = {
-      value: trees[selectedTree],
+      tree: {
+        value: config.trees[selectedTree],
+        name: config.treeNames[selectedTree],
+        age: 0,
+      },
       ownedBy: players[currentPlayer],
     }
     setTimeline(
@@ -79,6 +103,7 @@ function Game({ boardSize, players, trees }) {
         tiles: tiles,
       }])
     )
+    console.log(timeline)
     setStepNumber(history.length)
     if (!calculateWinner(tiles)) {
       setCurrentPlayer((currentPlayer + 1) % players.length)
@@ -90,16 +115,14 @@ function Game({ boardSize, players, trees }) {
     setCurrentPlayer(step % players.length)
   }
 
-  const getMoves = () => {
-    return timeline.map((step, move) => {
-      const desc = move ? `Go to move #${move}` : `Go to game start`
-      return (
-        <li key={move}>
-          <button onClick={() => jumpTo(move)}>{desc}</button>
-        </li>
-      )
-    })
-  }
+  const moves = timeline.map((_, move) => {
+    const desc = move ? `Go to move #${move}` : `Go to game start`
+    return (
+      <li key={move}>
+        <button onClick={() => jumpTo(move)}>{desc}</button>
+      </li>
+    )
+  })
 
   const isDraw = (rows) => {
     // full board
@@ -130,17 +153,18 @@ function Game({ boardSize, players, trees }) {
       <div className="game-board">
         <Board 
           tiles={timeline[stepNumber].tiles}
+          currentPlayer={currentPlayer}
           getClickHandler={getClickHandler}
         />
       </div>
       <div className="game-info">
         <div>{getStatus()}</div>
+        <div>{stepNumber}</div>
         <Palette
-          trees={trees}
           selectedTree={selectedTree}
           setSelectedTree={setSelectedTree}
         />
-        {config.DEBUG ? <ol>{getMoves()}</ol> : null}
+        {config.DEBUG ? <ol>{moves}</ol> : null}
       </div>
     </div>
   )

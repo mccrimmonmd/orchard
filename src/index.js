@@ -6,29 +6,36 @@ const config = {
   DEBUG: true,
   boardSize: { rows: 5, cols: 5 },
   players: [ 'summer', 'winter' ], 
-  trees: ['⋀', 'Y',] // '⋂', 'Ŧ', '∀', '⨙', 'ξ', '₸',
+  trees: ['⋀', 'Y',], // '⋂', 'Ŧ', '∀', '⨙', 'ξ', '₸',
+  treeNames: ['oak', 'elm'],
+  ages: ['.', ':'],
 }
 
-function Tile({ value, ownedBy, clickHandler }) {
+const showAge = (tree) =>
+  tree && (config.ages[tree.age] || tree.value)
+
+function Tile({ tree, ownedBy, currentPlayer, clickHandler }) {
   return (
     <button className={`tile ${ownedBy}`} onClick={clickHandler}>
-      {value}
+      {ownedBy === currentPlayer ? tree?.value : showAge(tree)}
     </button>
   )
 }
 
-function Board({ tiles, getClickHandler }) {
+function Board({ tiles, currentPlayer, getClickHandler }) {
   return (
     <div>
       {tiles.map((_, row) => {
         return (
           <div key={row} className="board-row">
             {tiles[row].map((_, col) => {
+              let ownedBy = tiles[row][col]?.ownedBy || ''
               return (
                 <Tile 
                   key={row + '.' + col}
-                  value={tiles[row][col]?.value}
-                  ownedBy={tiles[row][col]?.ownedBy || ''}
+                  tree={tiles[row][col]?.tree}
+                  ownedBy={ownedBy}
+                  currentPlayer={currentPlayer}
                   clickHandler={getClickHandler(row, col)}
                 />
               )}
@@ -40,8 +47,8 @@ function Board({ tiles, getClickHandler }) {
   )
 }
 
-function Palette({ trees, selectedTree, setSelectedTree }) {
-  return trees.map((tree, i) => {
+function Palette({ selectedTree, setSelectedTree }) {
+  return config.trees.map((tree, i) => {
     return (
       <button 
         key={tree}
@@ -143,7 +150,7 @@ function Game({ players }) {
       <div>
         {`Current player: ${players[currentPlayer]}`}
         <br />
-        {`Current tree: ${trees[selectedTree]}`}
+        {`Current tree: ${config.trees[selectedTree]}`}
       </div>
     )
   }
@@ -174,9 +181,7 @@ function Game({ players }) {
 
 ReactDOM.render(
   <Game
-    boardSize={config.boardSize}
     players={config.players}
-    trees={config.trees}
   />,
   document.getElementById('root')
 )

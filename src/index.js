@@ -65,6 +65,10 @@ const emptyBoard = () => {
     .map(() => Array(config.boardSize.cols).fill(null))
 }
 
+const startingBoard = () => {
+  return emptyBoard()
+}
+
 const timestep = (currentState) => {
   let tiles = emptyBoard()
   currentState.tiles.forEach((_, row) => {
@@ -84,7 +88,7 @@ const timestep = (currentState) => {
 
 function Game({ players }) {
   const [ timeline, setTimeline ] = useState(
-    [{ tiles: emptyBoard() }]
+    [{ tiles: startingBoard() }]
   )
   const [ stepNumber, setStepNumber ] = useState(0)
   const [ currentPlayer, setCurrentPlayer ] = useState(0)
@@ -94,7 +98,7 @@ function Game({ players }) {
     const history = timeline.slice(0, stepNumber + 1)
     const current = timestep(history[history.length - 1])
     const tiles = current.tiles
-    if (calculateWinner(tiles) || tiles[row][col]) {
+    if (calculateWinner(tiles) || tiles[row][col] != null) {
       return
     }
     tiles[row][col] = {
